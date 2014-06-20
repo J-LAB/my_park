@@ -49,13 +49,13 @@ J-LAB's entry for Philly EcoCamp
 
     bundle install
 
-  edit application config to use postgis:
+  edit application config to use postgis
 
     vim config/application.rb
 
       add "require 'active_record/connection_adapters/postgis_adapter/railtie'"
 
-  update database.yml to use postgis:
+  update database.yml to use postgis
 
     vim config/database.yml
 
@@ -87,13 +87,13 @@ J-LAB's entry for Philly EcoCamp
 
     guard init
 
-  setup guard to use spring:
+  setup guard to use spring
 
     vim Guardfile
 
       change line "guard :rspec do" to 'guard :rspec, cmd:"spring rspec" do'
 
-  require bootstrap in application.js and application.css:
+  require bootstrap in application.js and application.css
 
     vim app/assets/javascripts/application.js
 
