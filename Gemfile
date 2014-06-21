@@ -41,9 +41,12 @@ gem 'spring',        group: :development
 gem 'activerecord-postgis-adapter'
 gem 'bootstrap-sass'
 gem 'dbf'
+gem 'devise'
 gem 'execjs'
+gem 'exifr'
 gem 'haml'
 gem 'haml-rails'
+gem 'paperclip'
 gem 'rgeo'
 gem 'rgeo-geojson'
 

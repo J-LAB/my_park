@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
+  devise_for :users
   root 'test#index'
+  post 'test-test' => 'test#tag_image'
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
