@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140621163600) do
+ActiveRecord::Schema.define(version: 20140621181042) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,8 +22,19 @@ ActiveRecord::Schema.define(version: 20140621163600) do
     t.datetime "updated_at"
   end
 
+  create_table "park_areas", force: true do |t|
+    t.string   "name"
+    t.string   "address"
+    t.string   "zipcode"
+    t.decimal  "acres"
+    t.spatial  "boundary",   limit: {:srid=>4326, :type=>"geometry", :geographic=>true}
+    t.integer  "park_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "park_entrances", force: true do |t|
-    t.string   "type"
+    t.string   "access_type"
     t.string   "address"
     t.boolean  "primary"
     t.string   "features"
@@ -46,7 +57,7 @@ ActiveRecord::Schema.define(version: 20140621163600) do
 
   create_table "trails", force: true do |t|
     t.string   "name"
-    t.string   "type"
+    t.string   "trail_type"
     t.string   "material"
     t.integer  "width"
     t.decimal  "length"
