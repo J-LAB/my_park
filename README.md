@@ -1,4 +1,4 @@
-trail_buddy
+my_park
 ===========
 
 J-LAB's entry for Philly EcoCamp 
