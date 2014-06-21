@@ -4,6 +4,6 @@ class TestController < ApplicationController
   end
 
   def tag_image
-    ImageTagger.tag_image(params)
+    Tagger.tag_image(params)
   end
 end

@@ -11,23 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140621194014) do
+ActiveRecord::Schema.define(version: 20140621231102) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "districts", force: true do |t|
     t.spatial  "boundary",   limit: {:srid=>4326, :type=>"geometry", :geographic=>true}
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "image_tags", force: true do |t|
-    t.spatial  "coordinates",   limit: {:srid=>4326, :type=>"point", :geographic=>true}
-    t.string   "description"
-    t.integer  "uploader_id"
-    t.integer  "taggable_id"
-    t.string   "taggable_type"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -63,6 +53,18 @@ ActiveRecord::Schema.define(version: 20140621194014) do
     t.integer  "district_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "tags", force: true do |t|
+    t.spatial  "coordinates",     limit: {:srid=>4326, :type=>"point", :geographic=>true}
+    t.string   "description"
+    t.integer  "uploader_id"
+    t.integer  "taggable_id"
+    t.string   "taggable_type"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "type"
+    t.string   "image_file_name"
   end
 
   create_table "trails", force: true do |t|

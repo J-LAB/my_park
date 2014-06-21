@@ -1,5 +1,6 @@
-class ImageTagger
+class Tagger
 
+  def self.tag_location(params)
   def self.tag_image(params)
     file_path = write_to_tmp_location(params["photo"])
     create_image_tag(file_path)
