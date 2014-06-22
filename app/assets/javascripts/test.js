@@ -104,17 +104,21 @@ window.addEventListener('load', function() {
         }, 
 
         trigger: function(e) {
-            var lonlat = map.getLonLatFromPixel(e.xy).transform(map.getProjectionObject(), proj);
             if (clicked) {
                 endMarker = new OpenLayers.Marker(map.getLonLatFromPixel(e.xy));
                 var size = new OpenLayers.Size(21,25);
                 var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
                 var icon = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png', size, offset);
                 markers.addMarker(endMarker);
-                document.getElementById("startLat").value = startMarker.lonlat.transform(map.getProjectionObject(), proj).latitude;
-                document.getElementById("startLon").value = startMarker.lonlat.transform(map.getProjectionObject(), proj).longitude;
-                document.getElementById("endLat").value = endMarker.lonlat.transform(map.getProjectionObject(), proj).latitude;
-                document.getElementById("endLon").value = endMarker.lonlat.transform(map.getProjectionObject(), proj).longitude;
+                var eM = endMarker.lonlat.transform(map.getProjectionObject(), proj);
+                console.log(eM.lat, eM.lon);
+                var sM = startMarker.lonlat.transform(map.getProjectionObject(), proj);
+                console.log(sM.lat, sM.lon);
+
+                document.getElementById("startLat").value = sM.lat;
+                document.getElementById("startLon").value = sM.lon;
+                document.getElementById("endLat").value = eM.lat; 
+                document.getElementById("endLon").value = eM.lon;
                 document.forms.ruler.submit();
             } else {
                 startMarker.erase();
