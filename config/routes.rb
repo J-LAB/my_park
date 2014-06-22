@@ -2,7 +2,9 @@ Rails.application.routes.draw do
   devise_for :users
   root 'test#index'
   post 'test-test' => 'test#tag_image'
-
+  get 'upload' => 'test#upload'
+  post 'test-upload' => 'test#uploaded'
+  post 'test-test3' => 'test#analyze'
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

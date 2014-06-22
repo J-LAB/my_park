@@ -1,15 +1,18 @@
 class Tagger
 
-  def self.tag_location(params)
-  def self.tag_image(params)
-    file_path = write_to_tmp_location(params["photo"])
-    create_image_tag(file_path)
+  def self.create_tag(params)
+    Tag.create(
+      coordinates: "POINT(#{params["latitude"]} #{params["longitude"]})",
+      comments: params["comments"]
+    )
   end
 
-  def self.create_image_tag(file_path)
+  def self.create_image_tag(params)
+    file_path = write_to_tmp_location(params["photo"])
     exif = EXIFR::JPEG.new(file_path)
-    ImageTag.create(
+    Tag.create(
       coordinates: "POINT(#{exif.gps.latitude} #{exif.gps.longitude})"
+      comments: params["comments"]
     )
   end
 

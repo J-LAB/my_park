@@ -49,6 +49,8 @@ gem 'haml-rails'
 gem 'paperclip'
 gem 'rgeo'
 gem 'rgeo-geojson'
+gem 'rgeo-shapefile'
+gem 'rubyzip'
 
 group :development, :test do
   gem 'awesome_print'

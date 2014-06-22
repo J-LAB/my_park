@@ -7,44 +7,44 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
 def self.import_districts
- districts = get_geojson('PPR_Districts.geojson')
- districts.each do |d|
-   District.create(
-     id: d.feature_id,
-     boundary: d.geometry
-   )
- end
+  districts = get_geojson('PPR_Districts.geojson')
+  districts.each do |d|
+    District.create(
+      id: d.feature_id,
+      boundary: d.geometry
+    )
+  end
 end
 
 def self.import_parks
- parks = get_geojson('PPR_Boundaries.geojson')
- park_areas = []
- parks.each do |park|
-   if park.properties["NAME"] == park.properties["PARK"]
-     Park.create(
-       id: park.feature_id,
-       name: park.properties["NAME"],
-       address: park.properties["ADDRESS"],
-       zipcode: park.properties["ZIPCODE"],
-       acres: park.properties["ACRES"],
-       district_id: park.properties["DISTRICT"],
-       boundary: park.geometry
-     )
-   else
-     park_areas << park
-   end
- end
- park_areas.each do |park_area|
-   ParkArea.create(
-     id: park_area.feature_id,
-     park: Park.find_by(name: park_area.properties["PARK"]),
-     name: park_area.properties["NAME"],
-     address: park_area.properties["ADDRESS"],
-     zipcode: park_area.properties["ZIPCODE"],
-     acres: park_area.properties["ACRES"],
-     boundary: park_area.geometry
-   )
- end
+  parks = get_geojson('PPR_Boundaries.geojson')
+  park_areas = []
+  parks.each do |park|
+    if park.properties["NAME"] == park.properties["PARK"]
+      Park.create(
+        id: park.feature_id,
+        name: park.properties["NAME"],
+        address: park.properties["ADDRESS"],
+        zipcode: park.properties["ZIPCODE"],
+        acres: park.properties["ACRES"],
+        district_id: park.properties["DISTRICT"],
+        boundary: park.geometry
+      )
+    else
+      park_areas << park
+    end
+  end
+  park_areas.each do |park_area|
+    ParkArea.create(
+      id: park_area.feature_id,
+      park: Park.find_by(name: park_area.properties["PARK"]),
+      name: park_area.properties["NAME"],
+      address: park_area.properties["ADDRESS"],
+      zipcode: park_area.properties["ZIPCODE"],
+      acres: park_area.properties["ACRES"],
+      boundary: park_area.geometry
+    )
+  end
 end
 
 def self.import_park_entrances
@@ -87,10 +87,10 @@ def self.import_trails
 end
 
 def self.get_geojson(file_name)
- file_path = Rails.root.join('lib', 'geojson', file_name)
- data = File.read(file_path)
- json_string = JSON.parse(data)
- RGeo::GeoJSON.decode(json_string, :json_parser => :json)
+  file_path = Rails.root.join('lib', 'geojson', file_name)
+  data = File.read(file_path)
+  json_string = JSON.parse(data)
+  RGeo::GeoJSON.decode(json_string, :json_parser => :json)
 end
 
 import_districts
