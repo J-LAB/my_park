@@ -8,6 +8,13 @@
         <input type="submit" name="submit" value="Submit">
         <input type="hidden" name="authenticity_token" value=@csrf>
     </form>
+    <form action="/test-test3" method="POST" id="ruler">
+        <input type="hidden" name="startLat" id="startLat">
+        <input type="hidden" name="startLon" id="startLon">
+        <input type="hidden" name="endLat" id="endLat">
+        <input type="hidden" name="endLon" id="endLon">
+        <input type="hidden" name="authenticity_token" value=@csrf>
+    </form>
 </div>
 
 <div id="map"></div>
