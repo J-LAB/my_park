@@ -11,6 +11,7 @@ class Trail < ActiveRecord::Base
     properties = {}
     properties["length"] = length.to_s
     properties["name"] = name
+    properties["climb"] = climb.to_f
     properties["park_name"] = park.name unless park.nil?
     properties["park_id"] = park.id unless park.nil?
     properties["material"] = material
