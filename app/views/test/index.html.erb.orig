@@ -1,7 +1,11 @@
+<<<<<<< HEAD
+
 <button id="userAction">+</button>
 <button id="about">?</button>
+=======
 <%= content_tag :div, class: "data", data: {parks: @parks, trails: @trails, park_areas: @park_areas} do %>
 <% end %>
+>>>>>>> Add functionality
 <div id="upload">
     <h2>Share</h2>
     <form action="/test-test" method="POST"
@@ -34,6 +38,7 @@
         <li>Suggest/Vote on community projects
         <li>Post meet-ups on a park-specific community bulletin
     </ul>
+    
 </div>
 
 <div id="map"></div>
