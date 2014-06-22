@@ -8,7 +8,7 @@ class TestController < ApplicationController
   end
 
   def analyze
-    TrailAnalyzer.analyze(params)
+    TrailAnalyzer.analyze!(params)
   end
 
   def upload
