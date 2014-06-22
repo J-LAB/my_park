@@ -111,8 +111,11 @@ window.addEventListener('load', function() {
                 var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
                 var icon = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png', size, offset);
                 markers.addMarker(endMarker);
-                console.log(startMarker.lonlat.transform(map.getProjectionObject(), proj));
-                console.log(endMarker.lonlat.transform(map.getProjectionObject(), proj));
+                document.getElementById("startLat").value = startMarker.lonlat.transform(map.getProjectionObject(), proj).latitude;
+                document.getElementById("startLon").value = startMarker.lonlat.transform(map.getProjectionObject(), proj).longitude;
+                document.getElementById("endLat").value = endMarker.lonlat.transform(map.getProjectionObject(), proj).latitude;
+                document.getElementById("endLon").value = endMarker.lonlat.transform(map.getProjectionObject(), proj).longitude;
+                document.forms.ruler.submit();
             } else {
                 startMarker.erase();
                 endMarker.erase();
