@@ -87,13 +87,13 @@ window.addEventListener('load', function() {
     },
       styleMap: new OpenLayers.StyleMap({
         "default": new OpenLayers.Style(OpenLayers.Util.applyDefaults({
-          strokeColor: "#FF7F00",
+          strokeColor: "${strokeColor}",
           strokeWidth: 3,
           graphicName: "linestring"
         }, OpenLayers.Feature.Vector.style["default"])),
         "select": new OpenLayers.Style(OpenLayers.Util.applyDefaults({
           graphicName: "linestring",
-          strokeColor: "#F00000 ",
+          strokeColor: "#000000 ",
           strokeWidth: 5
         }, OpenLayers.Feature.Vector.style["select"]))
       }) 
@@ -183,6 +183,8 @@ window.addEventListener('load', function() {
         var collection = $('.data').data(request.data);
         for (ii = 0; ii < collection.length; ii++) { 
           var object = collection[ii];
+          object.properties.strokeColor = gimmeColor(object.properties.climb,0,50);
+          console.log(object);
           request.layer.addFeatures(geojson_format.read(object));
         }
     }
