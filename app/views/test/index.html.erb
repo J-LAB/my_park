@@ -1,6 +1,8 @@
 
+<button id="userAction">+</button>
+<button id="about">?</button>
 <div id="upload">
-    <h2>Image Upload</h2>
+    <h2>Share</h2>
     <form action="/test-test" method="POST"
         enctype="multipart/form-data">
         <label for="photo">Filename:</label>
@@ -15,6 +17,10 @@
         <input type="hidden" name="endLon" id="endLon">
         <input type="hidden" name="authenticity_token" value=@csrf>
     </form>
+</div>
+
+<div id="aboutus">
+    <h2>MyPark</h2>
 </div>
 
 <div id="map"></div>

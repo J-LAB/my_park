@@ -10,10 +10,15 @@ html, body, #map {
     z-index: 2;
 }
 
-#upload {
+h2 {
+    text-align: center;
+    margin: 0 auto;
+}
+
+#upload, #aboutus {
     width: 50%;
     height: 50%;
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: rgba(255, 255, 255, 0.9);
     margin: 0 auto;
     position: absolute;
     top: 25%;
@@ -22,4 +27,51 @@ html, body, #map {
     padding: 10px;
     z-index: 3;
     display: none;
+}
+
+#aboutus {
+
+}
+
+#userAction, #about {
+    position: absolute;
+    width: 10%;
+    bottom: 0;
+    margin: 0;
+    margin: 0 0 0 20px;
+    font-size: 4vw;
+
+
+    background-color:#77d42a;
+    border-top-left-radius:15px;
+    border-top-right-radius:15px;
+    border-bottom-right-radius:0px;
+    border-bottom-left-radius:0px;
+    text-indent:0;
+    border:1px solid #268a16;
+    display:inline-block;
+    font-family:Arial Black;
+    font-weight:bold;
+    font-style:normal;
+    text-decoration:none;
+    text-align:center;
+    text-shadow:1px 1px 0px #aade7c;
+}
+
+#userAction {
+    height: 11%;
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #77d42a), color-stop(1, #5cb811) );
+    box-shadow:inset 0px 1px 0px 0px #caefab;
+    color:#306108;
+    left: 0;
+    z-index: 4;
+}
+
+#about {
+    height: 10%;
+    background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #004400), color-stop(1, #116611) );
+    box-shadow:inset 0px 1px 0px 0px #55AA55;
+    color: #88CC88;
+    left: calc(10% - 20px);
+    z-index: 3;
 }

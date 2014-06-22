@@ -1,11 +1,48 @@
 window.addEventListener('load', function() {
+    var blurInt;
+    var blurMap = function() {
+        var blur = document.getElementById("map").style["-webkit-filter"];
+        var x = blur.split("(")[1].split("px)")[0];
+        x = parseFloat(x) + parseFloat(1);
+        document.getElementById("map").style["-webkit-filter"] = "blur(" + x + "px)";
+        if (x >= 5) {
+            clearInterval(blurInt);
+        }
+    };
+
+
+    var uAButton = document.getElementById("userAction");
+    uAButton.addEventListener("click", function() { 
+        document.getElementById("aboutus").style.display = "none"
+        if (document.getElementById("upload").style.display === "block")  {
+          document.getElementById("upload").style.display = "none";
+            document.getElementById("map").style["-webkit-filter"] = "blur(0px)";
+        } else {
+            document.getElementById("upload").style.display = "block";
+            document.getElementById("map").style["-webkit-filter"] = "blur(0px)";
+            blurInt = setInterval(blurMap, 50);
+        }
+    });
+
+    var aUButton = document.getElementById("about");
+    aUButton.addEventListener("click", function() { 
+        document.getElementById("upload").style.display = "none"
+        if (document.getElementById("aboutus").style.display === "block")  {
+          document.getElementById("aboutus").style.display = "none";
+            document.getElementById("map").style["-webkit-filter"] = "blur(0px)";
+        } else {
+            document.getElementById("aboutus").style.display = "block";
+            document.getElementById("map").style["-webkit-filter"] = "blur(0px)";
+            blurInt = setInterval(blurMap, 50);
+        }
+    });
 
     var proj = new OpenLayers.Projection("EPSG:4326");
 
     var map = new OpenLayers.Map('map', {
         projection: 'EPSG:3857',
         layers: [
-            new OpenLayers.Layer.OSM("OSM"
+            new OpenLayers.Layer.OSM("OSM", "", { opacity: 0.6 }
             )
         ],
         center: new OpenLayers.LonLat(-75.1667, 39.95)
