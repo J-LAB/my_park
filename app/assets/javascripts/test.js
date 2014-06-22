@@ -1,4 +1,12 @@
 window.addEventListener('load', function() {
+
+    
+    var modes = {
+        upload: false,
+        about: false,
+        ruler: false
+    };
+
     var blurInt;
     var blurMap = function() {
         var blur = document.getElementById("map").style["-webkit-filter"];
@@ -15,9 +23,9 @@ window.addEventListener('load', function() {
     uAButton.addEventListener("click", function() { 
         document.getElementById("aboutus").style.display = "none"
         if (document.getElementById("upload").style.display === "block")  {
-          document.getElementById("upload").style.display = "none";
-            document.getElementById("map").style["-webkit-filter"] = "blur(0px)";
+            clearDialogs();
         } else {
+            modes.upload = true;
             document.getElementById("upload").style.display = "block";
             document.getElementById("map").style["-webkit-filter"] = "blur(0px)";
             blurInt = setInterval(blurMap, 50);
@@ -28,9 +36,9 @@ window.addEventListener('load', function() {
     aUButton.addEventListener("click", function() { 
         document.getElementById("upload").style.display = "none"
         if (document.getElementById("aboutus").style.display === "block")  {
-          document.getElementById("aboutus").style.display = "none";
-            document.getElementById("map").style["-webkit-filter"] = "blur(0px)";
+            clearDialogs();
         } else {
+            modes.about = true;
             document.getElementById("aboutus").style.display = "block";
             document.getElementById("map").style["-webkit-filter"] = "blur(0px)";
             blurInt = setInterval(blurMap, 50);
@@ -73,11 +81,13 @@ window.addEventListener('load', function() {
     map.addLayer(markers);
 
 
+    /* Picture of Aaron
     var size = new OpenLayers.Size(80,80);
     var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
     var icon = new OpenLayers.Icon('http://i.imgur.com/9Bw1rLa.png', size, offset);
     markers.addMarker(new OpenLayers.Marker(new OpenLayers.LonLat(-75.1667,39.95).transform(proj, map.getProjectionObject()),icon));
     markers.addMarker(new OpenLayers.Marker(new OpenLayers.LonLat(-75.1667, 39.95).transform(proj, map.getProjectionObject()),icon.clone()));
+    */
 
     function handler(request) {
 
@@ -141,7 +151,11 @@ window.addEventListener('load', function() {
         }, 
 
         trigger: function(e) {
-            if (clicked) {
+            if (modes.upload || modes.about) {
+                clearDialogs();
+            }
+
+            else if (clicked) {
                 endMarker = new OpenLayers.Marker(map.getLonLatFromPixel(e.xy));
                 var size = new OpenLayers.Size(21,25);
                 var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
@@ -180,5 +194,25 @@ window.addEventListener('load', function() {
               map.setCenter(new OpenLayers.LonLat(position.coords.longitude, position.coords.latitude).transform(proj, map.getProjectionObject()));
         });
     }
+
+    var clearDialogs = function() {
+        document.getElementById("map").style["-webkit-filter"] = "blur(0px)";
+        document.getElementById("aboutus").style.display = "none";
+        document.getElementById("upload").style.display = "none";
+        modes.upload = false;
+        modes.about = false;
+    };
+
+    window.onkeyup = function(e) {
+        var key = e.keyCode ? e.keyCode : e.which;
+
+        if (key === 27) {
+            clearDialogs();
+            startMarker.erase();
+            endMarker.erase();
+            clicked = false;
+        }
+    }
+
 }, false);
 
