@@ -5,14 +5,21 @@ html, body, #map {
     overflow: hidden;
 }
 
+#map {
+    position: absolute;
+    z-index: 2;
+}
+
 #upload {
     width: 50%;
     height: 50%;
-    background-color: rgba(255, 255, 255, 0.85);
+    background-color: rgba(255, 255, 255, 0.95);
     margin: 0 auto;
     position: absolute;
     top: 25%;
     left: 25%;
     border-radius: 20px;
     padding: 10px;
+    z-index: 3;
+    display: none;
 }

@@ -23,14 +23,18 @@ window.addEventListener('load', function() {
     });
     */
 
+
+    var proj = new OpenLayers.Projection("EPSG:4326");
+
     var map = new OpenLayers.Map('map', {
         projection: 'EPSG:3857',
         layers: [
-            new OpenLayers.Layer.OSM( "Simple OSM Map")
+            new OpenLayers.Layer.OSM("OSM"
+            )
         ],
         center: new OpenLayers.LonLat(-75.1667, 39.95)
-            .transform('EPSG:4326', 'EPSG:3857'),
-        zoom: 12 
+            .transform(proj, 'EPSG:3857'),
+        zoom: 13 
     });
 
     var parkStyle = {
@@ -50,8 +54,17 @@ window.addEventListener('load', function() {
 
     var trailsLayer = new OpenLayers.Layer.Vector("Trails Layer", { style: trailStyle });
     var parksLayer = new OpenLayers.Layer.Vector("Parks Layer", { style: parkStyle });
+    var markers = new OpenLayers.Layer.Markers("Markers");
     map.addLayer(parksLayer);
     map.addLayer(trailsLayer);
+    map.addLayer(markers);
+
+
+    var size = new OpenLayers.Size(80,80);
+    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+    var icon = new OpenLayers.Icon('http://i.imgur.com/9Bw1rLa.png', size, offset);
+    markers.addMarker(new OpenLayers.Marker(new OpenLayers.LonLat(-75.1667,39.95).transform(proj, map.getProjectionObject()),icon));
+    markers.addMarker(new OpenLayers.Marker(new OpenLayers.LonLat(-75.1667, 39.95).transform(proj, map.getProjectionObject()),icon.clone()));
 
     function handler(request) {
 
@@ -81,6 +94,13 @@ window.addEventListener('load', function() {
             scope: {
                 layer: GeoJSONs[i].layer
             }
+        });
+    }
+
+
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+              map.setCenter(new OpenLayers.LonLat(position.coords.longitude, position.coords.latitude).transform(proj, map.getProjectionObject()));
         });
     }
 
