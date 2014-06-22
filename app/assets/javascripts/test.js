@@ -1,6 +1,5 @@
 window.addEventListener('load', function() {
 
-    
     var modes = {
         upload: false,
         about: false,
@@ -58,17 +57,45 @@ window.addEventListener('load', function() {
         zoom: 13 
     });
 
-    var parkStyle = {
-        fill: true,
-
-    }
-
     var trailStyle = {
-        strokeColor: "#FF7F00",
-            strokeWidth: 4
     }
 
-    var trailsLayer = new OpenLayers.Layer.Vector("Trails Layer", { style: trailStyle });
+    var trailsLayer = new OpenLayers.Layer.Vector("Trails Layer", { 
+      eventListeners: {
+        'featureselected':function(evt){
+          var feature = evt.feature;
+          var popup = new OpenLayers.Popup.FramedCloud(
+            "popup",
+            feature.geometry.getBounds().getCenterLonLat(),
+            OpenLayers.Size(400,800),
+            "<div style='font-size:.8em'>Name: " + feature.attributes.name +"<br>Length: " + feature.attributes.length+"</div>",
+            null,
+            null
+          );
+          popup.fixedRelativePosition = true;
+          feature.popup = popup;
+          map.addPopup(popup);
+        },
+        'featureunselected':function(evt){
+          var feature = evt.feature;
+          map.removePopup(feature.popup);
+          feature.popup.destroy();
+          feature.popup = null;
+        }
+    },
+      styleMap: new OpenLayers.StyleMap({
+        "default": new OpenLayers.Style(OpenLayers.Util.applyDefaults({
+          strokeColor: "#FF7F00",
+          strokeWidth: 3,
+          graphicName: "linestring"
+        }, OpenLayers.Feature.Vector.style["default"])),
+        "select": new OpenLayers.Style(OpenLayers.Util.applyDefaults({
+          graphicName: "linestring",
+          strokeColor: "#F00000 ",
+          strokeWidth: 5
+        }, OpenLayers.Feature.Vector.style["select"]))
+      }) 
+    });
     var parksLayer = new OpenLayers.Layer.Vector("Parks Layer", { 
       eventListeners: {
         'featureselected':function(evt){
@@ -78,9 +105,9 @@ window.addEventListener('load', function() {
             "popup",
             feature.geometry.getBounds().getCenterLonLat(),
             OpenLayers.Size(400,800),
-            "<div style='font-size:.8em'>Feature: " + feature.id +"<br>Foo: " + feature.attributes.park_name+"</div>",
+            "<div style='font-size:.8em'>Park: " + feature.attributes.name +"<br>Size: " + feature.attributes.acres+" acres</div>",
             null,
-            true
+            null
           );
           popup.fixedRelativePosition = true;
           feature.popup = popup;
@@ -114,13 +141,19 @@ window.addEventListener('load', function() {
         }, OpenLayers.Feature.Vector.style["select"]))
       }) 
     });
-    var selector = new OpenLayers.Control.SelectFeature(parksLayer,{
-        hover:true,
-        autoActivate:true
+    var park_selector = new OpenLayers.Control.SelectFeature([parksLayer],{
+      hover:true,
+      autoActivate:true
     });
-
+    var trail_selector = new OpenLayers.Control.SelectFeature([trailsLayer],{
+      clickout: true,
+      toggle: false,
+      multiple: false,
+      hover: false,
+      toggleKey: "ctrlKey", // ctrl key removes from selection
+      multipleKey: "shiftKey", // shift key adds to selection
+    });
 //Step 4 - add the layer and control to the map
-    map.addControl(selector);
     var markers = new OpenLayers.Layer.Markers("Markers");
     map.addLayer(parksLayer);
     map.addLayer(trailsLayer);
@@ -191,14 +224,18 @@ window.addEventListener('load', function() {
 
     map.addControl(new OpenLayers.Control.LayerSwitcher());
     selectControl = new OpenLayers.Control.SelectFeature(
-      [parksLayer], {
-        clickout: true, toggle: false,
-        multiple: false, hover: false,
-        toggleKey: "ctrlKey", // ctrl key removes from selection
-        multipleKey: "shiftKey" // shift key adds to selection
+      [parksLayer, trailsLayer], {
+      clickout: true,
+      toggle: false,
+      multiple: false,
+      hover: false,
+      toggleKey: "ctrlKey", // ctrl key removes from selection
+      multipleKey: "shiftKey", // shift key adds to selection
       }
     );
     map.addControl(selectControl);
+    map.addControl(park_selector);
+    map.addControl(trail_selector);
     selectControl.activate(); 
 
     // var clicked = false;
@@ -266,11 +303,11 @@ window.addEventListener('load', function() {
     // map.addControl(click);
     // click.activate();
 
-    if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-              map.setCenter(new OpenLayers.LonLat(position.coords.longitude, position.coords.latitude).transform(proj, map.getProjectionObject()));
-        });
-    }
+    // if ("geolocation" in navigator) {
+    //     navigator.geolocation.getCurrentPosition(function(position) {
+    //           map.setCenter(new OpenLayers.LonLat(position.coords.longitude, position.coords.latitude).transform(proj, map.getProjectionObject()));
+    //     });
+    // }
 
     var clearDialogs = function() {
         document.getElementById("map").style["-webkit-filter"] = "blur(0px)";
