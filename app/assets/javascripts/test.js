@@ -26,22 +26,32 @@ window.addEventListener('load', function() {
     var map = new OpenLayers.Map('map', {
         projection: 'EPSG:3857',
         layers: [
-            new OpenLayers.Layer.Google("Google Physical", {
-                visibility: false,
-                type: google.maps.MapTypeId.TERRAIN
-            })
+            new OpenLayers.Layer.OSM( "Simple OSM Map")
         ],
         center: new OpenLayers.LonLat(-75.1667, 39.95)
-            // Google.v3 uses web mercator as projection, so we have to
-            // transform our coordinates
             .transform('EPSG:4326', 'EPSG:3857'),
-        zoom: 10 
+        zoom: 12 
     });
 
-    var trailsLayer = new OpenLayers.Layer.Vector("Trails Layer");
-    var parksLayer = new OpenLayers.Layer.Vector("Parks Layer");
-    map.addLayer(trailsLayer);
+    var parkStyle = {
+        fill: true,
+        fillColor: "#00FF00",
+        fillOpacity: 0.3,
+        strokeColor: "#008800",
+        strokeOpacity: 0.7,
+        strokeDashstyle: "dot" 
+
+    }
+
+    var trailStyle = {
+        strokeColor: "#FF7F00",
+            strokeWidth: 4
+    }
+
+    var trailsLayer = new OpenLayers.Layer.Vector("Trails Layer", { style: trailStyle });
+    var parksLayer = new OpenLayers.Layer.Vector("Parks Layer", { style: parkStyle });
     map.addLayer(parksLayer);
+    map.addLayer(trailsLayer);
 
     function handler(request) {
 
@@ -73,5 +83,6 @@ window.addEventListener('load', function() {
             }
         });
     }
+
 
 }, false);
