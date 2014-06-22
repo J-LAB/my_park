@@ -4,10 +4,10 @@
 <div id="upload">
     <h2>Share</h2>
     <form action="/test-test" method="POST"
-        enctype="multipart/form-data">
+        enctype="multipart/form-data" id="imgUp">
         <label for="photo">Filename:</label>
         <input type="file" name="photo" id="photo">
-        <input type="submit" name="submit" value="Submit">
+        <input type="submit" name="submit" value="Submit" id="upBtn">
         <input type="hidden" name="authenticity_token" value=@csrf>
     </form>
     <form action="/test-test3" method="POST" id="ruler">
@@ -21,6 +21,19 @@
 
 <div id="aboutus">
     <h2>What is MyPark?</h2>
+    <p>This goal of this web application is to strengthen the relationship
+    between community members and the public parks in their area. We fuse GIS
+    data provided by the Parks Department and project it on to OpenStreetMap
+    with the intention of producing a useful tool for engagement with local
+    parks</p>
+    <h3>Community Involvement</h3>
+    <ul>
+        <li>Report problems with a park
+        <li>Upload/View photos
+        <li>Suggest/Vote on community projects
+        <li>Post meet-ups on a park-specific community bulletin
+    </ul>
+    
 </div>
 
 <div id="map"></div>
