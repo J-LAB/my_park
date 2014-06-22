@@ -5,8 +5,6 @@ class Park < ActiveRecord::Base
   has_many :trails
   belongs_to :district
 
-  set_rgeo_factory_for_column(:boundary, RGeo::Geographic.spherical_factory(:srid => 4326))
-
   def to_geojson
     park = {}
     park["type"] = "Feature"

@@ -9,7 +9,7 @@ class Trail < ActiveRecord::Base
     trail["id"] = id
     trail["geometry"] = RGeo::GeoJSON.encode(geospatial_data)
     properties = {}
-    properties["length"] = length
+    properties["length"] = length.to_s
     properties["name"] = name
     properties["park_name"] = park.name unless park.nil?
     properties["park_id"] = park.id unless park.nil?

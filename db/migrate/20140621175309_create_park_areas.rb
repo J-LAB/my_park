@@ -5,7 +5,7 @@ class CreateParkAreas < ActiveRecord::Migration
       t.string :address
       t.string :zipcode
       t.decimal :acres
-      t.geometry :boundary, geographic: true
+      t.geometry :boundary
       t.integer :park_id
       t.timestamps
     end

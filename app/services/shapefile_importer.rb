@@ -32,7 +32,6 @@ class ShapefileImporter
     raise "Not a shapefile" unless File.extname(file_path) == ".shp"
     factory = RGeo::Geographic.spherical_factory(:srid => 4326)
     # factory = RGeo::Geographic.spherical_factory(:srid => 4269)
-    p file_path
     RGeo::Shapefile::Reader.open(file_path, :factory => factory) do |file|
       file.each do |record|
         require 'pry'; binding.pry

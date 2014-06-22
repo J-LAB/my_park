@@ -60,11 +60,6 @@ window.addEventListener('load', function() {
 
     var parkStyle = {
         fill: true,
-        fillColor: "#00FF00",
-        fillOpacity: 0.3,
-        strokeColor: "#008800",
-        strokeOpacity: 0.7,
-        strokeDashstyle: "dot" 
 
     }
 
@@ -74,12 +69,61 @@ window.addEventListener('load', function() {
     }
 
     var trailsLayer = new OpenLayers.Layer.Vector("Trails Layer", { style: trailStyle });
-    var parksLayer = new OpenLayers.Layer.Vector("Parks Layer", { style: parkStyle });
+    var parksLayer = new OpenLayers.Layer.Vector("Parks Layer", { 
+      eventListeners: {
+        'featureselected':function(evt){
+          var feature = evt.feature;
+          var popup = new OpenLayers.Popup.FramedCloud(
+            "popup",
+            OpenLayers.LonLat.fromString(feature.geometry.getCentroid().toString()),
+            OpenLayers.Size(400,800),
+            "<div style='font-size:.8em'>Feature: " + feature.id +"<br>Foo: " + feature.attributes.park_name+"</div>",
+            null,
+            true
+          );
+          popup.fixedRelativePosition = true;
+          feature.popup = popup;
+          map.addPopup(popup);
+        },
+        'featureunselected':function(evt){
+          var feature = evt.feature;
+          map.removePopup(feature.popup);
+          feature.popup.destroy();
+          feature.popup = null;
+        }
+    },
+      styleMap: new OpenLayers.StyleMap({
+        "default": new OpenLayers.Style(OpenLayers.Util.applyDefaults({
+          fill: true,
+          fillColor: "#00FF00",
+          fillOpacity: 0.3,
+          strokeColor: "#008800",
+          strokeOpacity: 0.7,
+          strokeDashstyle: "dot",
+          graphicName: "polygon"
+        }, OpenLayers.Feature.Vector.style["default"])),
+        "select": new OpenLayers.Style(OpenLayers.Util.applyDefaults({
+          graphicName: "polygon",
+          fill: true,
+          fillColor: "#A55D35",
+          fillOpacity: 0.7,
+          strokeColor: "#DABD95",
+          strokeOpacity: 0.9,
+          strokeDashstyle: "dot",
+        }, OpenLayers.Feature.Vector.style["select"]))
+      }) 
+    });
+    var selector = new OpenLayers.Control.SelectFeature(parksLayer,{
+        hover:true,
+        autoActivate:true
+    });
+
+//Step 4 - add the layer and control to the map
+    map.addControl(selector);
     var markers = new OpenLayers.Layer.Markers("Markers");
     map.addLayer(parksLayer);
     map.addLayer(trailsLayer);
     map.addLayer(markers);
-
 
     /* Picture of Aaron
     var size = new OpenLayers.Size(80,80);
@@ -96,98 +140,130 @@ window.addEventListener('load', function() {
             'externalProjection': new OpenLayers.Projection("EPSG:4326")
         });
 
-        this.layer.addFeatures(geojson_format.read(request.responseText));
+        var collection = $('.data').data(request.data);
+        for (ii = 0; ii < collection.length; ii++) { 
+          var object = collection[ii];
+          request.layer.addFeatures(geojson_format.read(object));
+        }
     }
 
     var GeoJSONs = [
         {
-            url: "assets/PPR_Boundaries.geojson",
+            data: "parks",
             layer: parksLayer
         },
         {
-            url:"assets/trails.geojson",
+            data: "parkAreas",
+            layer: parksLayer
+        },
+        {
+            data: "trails",
             layer: trailsLayer
         }
-    ];        
+    ];
+
+    // var GeoJSONs = [
+    //     {
+    //         url: "assets/PPR_Boundaries.geojson",
+    //         layer: parksLayer
+    //     },
+    //     {
+    //         url:"assets/trails.geojson",
+    //         layer: trailsLayer
+    //     }
+    // ];        
 
     for (var i = 0; i < GeoJSONs.length; i++) {
-        OpenLayers.Request.GET({
-            url: GeoJSONs[i].url,
-            callback: handler,
-            scope: {
-                layer: GeoJSONs[i].layer
-            }
-        });
+      handler(GeoJSONs[i]);
+        // OpenLayers.Request.GET({
+        //     url: GeoJSONs[i].url,
+        //     callback: handler,
+        //     scope: {
+        //         layer: GeoJSONs[i].layer
+        //     }
+        // });
     }
 
-    var clicked = false;
-    var startMarker = new OpenLayers.Marker(new OpenLayers.LonLat(0, 0));
-    startMarker.display(false);
-    var endMarker = new OpenLayers.Marker(new OpenLayers.LonLat(0, 0));
-    endMarker.display(false);
+    var report = function(e) {
+      OpenLayers.Console.log(e.type, e.feature.id);
+    }; 
+
+    map.addControl(new OpenLayers.Control.LayerSwitcher());
+    selectControl = new OpenLayers.Control.SelectFeature(
+      [parksLayer], {
+        clickout: true, toggle: false,
+        multiple: false, hover: false,
+        toggleKey: "ctrlKey", // ctrl key removes from selection
+        multipleKey: "shiftKey" // shift key adds to selection
+      }
+    );
+    map.addControl(selectControl);
+    selectControl.activate(); 
+
+    // var clicked = false;
+    // var startMarker = new OpenLayers.Marker(new OpenLayers.LonLat(0, 0));
+    // startMarker.display(false);
+    // var endMarker = new OpenLayers.Marker(new OpenLayers.LonLat(0, 0));
+    // endMarker.display(false);
 
 
-    OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {                
-        defaultHandlerOptions: {
-            'single': true,
-            'double': false,
-            'pixelTolerance': 0,
-            'stopSingle': false,
-            'stopDouble': false
-        },
-
-        initialize: function(options) {
-            this.handlerOptions = OpenLayers.Util.extend(
-                {}, this.defaultHandlerOptions
-            );
-            OpenLayers.Control.prototype.initialize.apply(
-                this, arguments
-            ); 
-            this.handler = new OpenLayers.Handler.Click(
-                this, {
-                    'click': this.trigger
-                }, this.handlerOptions
-            );
-        }, 
-
-        trigger: function(e) {
-            if (modes.upload || modes.about) {
-                clearDialogs();
-            }
-
-            else if (clicked) {
-                endMarker = new OpenLayers.Marker(map.getLonLatFromPixel(e.xy));
-                var size = new OpenLayers.Size(21,25);
-                var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
-                var icon = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png', size, offset);
-                markers.addMarker(endMarker);
-                var eM = endMarker.lonlat.transform(map.getProjectionObject(), proj);
-                console.log(eM.lat, eM.lon);
-                var sM = startMarker.lonlat.transform(map.getProjectionObject(), proj);
-                console.log(sM.lat, sM.lon);
-
-                document.getElementById("startLat").value = sM.lat;
-                document.getElementById("startLon").value = sM.lon;
-                document.getElementById("endLat").value = eM.lat; 
-                document.getElementById("endLon").value = eM.lon;
-                document.forms.ruler.submit();
-            } else {
-                startMarker.erase();
-                endMarker.erase();
-                startMarker = new OpenLayers.Marker(map.getLonLatFromPixel(e.xy));
-                var size = new OpenLayers.Size(21,25);
-                var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
-                var icon = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png', size, offset);
-                markers.addMarker(startMarker,icon);
-            }
-            clicked = !clicked;
-        }
-
-    });
-
-    var click = new OpenLayers.Control.Click();
-    map.addControl(click);
-    click.activate();
+    // OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {                
+    //     defaultHandlerOptions: {
+    //         'single': true,
+    //         'double': false,
+    //         'pixelTolerance': 0,
+    //         'stopSingle': false,
+    //         'stopDouble': false
+    //     },
+    //
+    //     initialize: function(options) {
+    //         this.handlerOptions = OpenLayers.Util.extend(
+    //             {}, this.defaultHandlerOptions
+    //         );
+    //         OpenLayers.Control.prototype.initialize.apply(
+    //             this, arguments
+    //         ); 
+    //         this.handler = new OpenLayers.Handler.Click(
+    //             this, {
+    //                 'click': this.trigger
+    //             }, this.handlerOptions
+    //         );
+    //     }, 
+    //
+    //     trigger: function(e) {
+    //         if (clicked) {
+    //             endMarker = new OpenLayers.Marker(map.getLonLatFromPixel(e.xy));
+    //             var size = new OpenLayers.Size(21,25);
+    //             var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+    //             var icon = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png', size, offset);
+    //             markers.addMarker(endMarker);
+    //             var eM = endMarker.lonlat.transform(map.getProjectionObject(), proj);
+    //             console.log(eM.lat, eM.lon);
+    //             var sM = startMarker.lonlat.transform(map.getProjectionObject(), proj);
+    //             console.log(sM.lat, sM.lon);
+    //
+    //             document.getElementById("startLat").value = sM.lat;
+    //             document.getElementById("startLon").value = sM.lon;
+    //             document.getElementById("endLat").value = eM.lat; 
+    //             document.getElementById("endLon").value = eM.lon;
+    //             document.forms.ruler.submit();
+    //         } else {
+    //             startMarker.erase();
+    //             endMarker.erase();
+    //             startMarker = new OpenLayers.Marker(map.getLonLatFromPixel(e.xy));
+    //             var size = new OpenLayers.Size(21,25);
+    //             var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+    //             var icon = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png', size, offset);
+    //             markers.addMarker(startMarker,icon);
+    //         }
+    //         clicked = !clicked;
+    //     }
+    //
+    // });
+    //
+    // var click = new OpenLayers.Control.Click();
+    // map.addControl(click);
+    // click.activate();
 
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(function(position) {
