@@ -73,9 +73,10 @@ window.addEventListener('load', function() {
       eventListeners: {
         'featureselected':function(evt){
           var feature = evt.feature;
+          console.log(feature.attributes);
           var popup = new OpenLayers.Popup.FramedCloud(
             "popup",
-            OpenLayers.LonLat.fromString(feature.geometry.getCentroid().toString()),
+            feature.geometry.getBounds().getCenterLonLat(),
             OpenLayers.Size(400,800),
             "<div style='font-size:.8em'>Feature: " + feature.id +"<br>Foo: " + feature.attributes.park_name+"</div>",
             null,

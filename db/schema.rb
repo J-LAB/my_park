@@ -27,10 +27,10 @@ ActiveRecord::Schema.define(version: 20140622031609) do
     t.string   "address"
     t.string   "zipcode"
     t.decimal  "acres"
+    t.spatial  "boundary",   limit: {:srid=>4326, :type=>"geometry", :geographic=>true}
     t.integer  "park_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.spatial  "boundary",   limit: {:srid=>0, :type=>"geometry"}
   end
 
   create_table "park_entrances", force: true do |t|
@@ -49,10 +49,10 @@ ActiveRecord::Schema.define(version: 20140622031609) do
     t.string   "address"
     t.string   "zipcode"
     t.decimal  "acres"
+    t.spatial  "boundary",    limit: {:srid=>4326, :type=>"geometry", :geographic=>true}
     t.integer  "district_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.spatial  "boundary",    limit: {:srid=>0, :type=>"geometry"}
   end
 
   create_table "pins", force: true do |t|
