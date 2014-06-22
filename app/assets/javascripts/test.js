@@ -6,6 +6,8 @@ window.addEventListener('load', function() {
         ruler: false
     };
 
+    var curPark = null;
+
     var blurInt;
     var blurMap = function() {
         var blur = document.getElementById("map").style["-webkit-filter"];
@@ -100,7 +102,7 @@ window.addEventListener('load', function() {
       eventListeners: {
         'featureselected':function(evt){
           var feature = evt.feature;
-          console.log(feature.attributes);
+          curPark = evt.feature;
           var popup = new OpenLayers.Popup.FramedCloud(
             "popup",
             feature.geometry.getBounds().getCenterLonLat(),
@@ -115,9 +117,13 @@ window.addEventListener('load', function() {
         },
         'featureunselected':function(evt){
           var feature = evt.feature;
+          curPark = null;
           map.removePopup(feature.popup);
           feature.popup.destroy();
           feature.popup = null;
+        },
+        'mouseup': function(evt) {
+            alert("hey arnold!");
         }
     },
       styleMap: new OpenLayers.StyleMap({
@@ -219,7 +225,7 @@ window.addEventListener('load', function() {
     }
 
     var report = function(e) {
-      OpenLayers.Console.log(e.type, e.feature.id);
+      //OpenLayers.Console.log(e.type, e.feature.id);
     }; 
 
     map.addControl(new OpenLayers.Control.LayerSwitcher());
@@ -245,63 +251,40 @@ window.addEventListener('load', function() {
     // endMarker.display(false);
 
 
-    // OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {                
-    //     defaultHandlerOptions: {
-    //         'single': true,
-    //         'double': false,
-    //         'pixelTolerance': 0,
-    //         'stopSingle': false,
-    //         'stopDouble': false
-    //     },
-    //
-    //     initialize: function(options) {
-    //         this.handlerOptions = OpenLayers.Util.extend(
-    //             {}, this.defaultHandlerOptions
-    //         );
-    //         OpenLayers.Control.prototype.initialize.apply(
-    //             this, arguments
-    //         ); 
-    //         this.handler = new OpenLayers.Handler.Click(
-    //             this, {
-    //                 'click': this.trigger
-    //             }, this.handlerOptions
-    //         );
-    //     }, 
-    //
-    //     trigger: function(e) {
-    //         if (clicked) {
-    //             endMarker = new OpenLayers.Marker(map.getLonLatFromPixel(e.xy));
-    //             var size = new OpenLayers.Size(21,25);
-    //             var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
-    //             var icon = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png', size, offset);
-    //             markers.addMarker(endMarker);
-    //             var eM = endMarker.lonlat.transform(map.getProjectionObject(), proj);
-    //             console.log(eM.lat, eM.lon);
-    //             var sM = startMarker.lonlat.transform(map.getProjectionObject(), proj);
-    //             console.log(sM.lat, sM.lon);
-    //
-    //             document.getElementById("startLat").value = sM.lat;
-    //             document.getElementById("startLon").value = sM.lon;
-    //             document.getElementById("endLat").value = eM.lat; 
-    //             document.getElementById("endLon").value = eM.lon;
-    //             document.forms.ruler.submit();
-    //         } else {
-    //             startMarker.erase();
-    //             endMarker.erase();
-    //             startMarker = new OpenLayers.Marker(map.getLonLatFromPixel(e.xy));
-    //             var size = new OpenLayers.Size(21,25);
-    //             var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
-    //             var icon = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png', size, offset);
-    //             markers.addMarker(startMarker,icon);
-    //         }
-    //         clicked = !clicked;
-    //     }
-    //
-    // });
-    //
-    // var click = new OpenLayers.Control.Click();
-    // map.addControl(click);
-    // click.activate();
+    OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {                
+        defaultHandlerOptions: {
+            'single': true,
+            'double': false,
+            'pixelTolerance': 0,
+            'stopSingle': false,
+            'stopDouble': false
+        },
+   
+        initialize: function(options) {
+            this.handlerOptions = OpenLayers.Util.extend(
+                {}, this.defaultHandlerOptions
+            );
+            OpenLayers.Control.prototype.initialize.apply(
+                this, arguments
+            ); 
+            this.handler = new OpenLayers.Handler.Click(
+                this, {
+                    'click': this.trigger
+                }, this.handlerOptions
+            );
+        }, 
+    
+        trigger: function(e) {
+            if (curPark) {
+                map.zoomToExtent(curPark.geometry.getBounds());
+            }
+        }
+    
+    });
+    
+    var click = new OpenLayers.Control.Click();
+    map.addControl(click);
+    click.activate();
 
     // if ("geolocation" in navigator) {
     //     navigator.geolocation.getCurrentPosition(function(position) {
@@ -327,6 +310,7 @@ window.addEventListener('load', function() {
             clicked = false;
         }
     }
+
 
 
     /* XHR Image Upload */
@@ -377,3 +361,19 @@ window.addEventListener('load', function() {
     }
 }, false);
 
+var gimmeColor = function(x, min, max) {
+    var r = Math.floor((255 * (x - min))/(max - min));
+    var b = Math.floor((255 * (max - x))/(max - min));
+
+    var R = r.toString(16);
+    if (R.length === 1) {
+        R = "0" + R;
+    }
+
+    var B = b.toString(16);
+    if (B.length === 1) {
+        B = "0" + B;
+    }
+
+   return ("#" + R + "00" + B); 
+};
