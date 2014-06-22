@@ -1,28 +1,4 @@
-
 window.addEventListener('load', function() {
-/*
-    var parkStyle = new OpenLayers.StyleMap({
-        "default": new OpenLayers.Style({
-            fillColor: "#00FF00",
-            fillOpacity: 0.1,
-            strokeOpacity: 0.2,
-            strokeColor: "#00FF00",
-            graphicZIndex: 3,
-            graphicOpacity: 0.5,
-            transparent: true
-        })
-    });
-
-    var trailStyle = new OpenLayers.StyleMap({
-        "default": new OpenLayers.Style({
-            strokeColor: "#000000",
-            strokeOpacity: 1,
-            graphicZIndex: 2,
-            graphicOpacity:1 
-        })
-    });
-    */
-
 
     var proj = new OpenLayers.Projection("EPSG:4326");
 
@@ -97,12 +73,68 @@ window.addEventListener('load', function() {
         });
     }
 
+    var clicked = false;
+    var startMarker = new OpenLayers.Marker(new OpenLayers.LonLat(0, 0));
+    startMarker.display(false);
+    var endMarker = new OpenLayers.Marker(new OpenLayers.LonLat(0, 0));
+    endMarker.display(false);
+
+
+    OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {                
+        defaultHandlerOptions: {
+            'single': true,
+            'double': false,
+            'pixelTolerance': 0,
+            'stopSingle': false,
+            'stopDouble': false
+        },
+
+        initialize: function(options) {
+            this.handlerOptions = OpenLayers.Util.extend(
+                {}, this.defaultHandlerOptions
+            );
+            OpenLayers.Control.prototype.initialize.apply(
+                this, arguments
+            ); 
+            this.handler = new OpenLayers.Handler.Click(
+                this, {
+                    'click': this.trigger
+                }, this.handlerOptions
+            );
+        }, 
+
+        trigger: function(e) {
+            var lonlat = map.getLonLatFromPixel(e.xy).transform(map.getProjectionObject(), proj);
+            if (clicked) {
+                endMarker = new OpenLayers.Marker(map.getLonLatFromPixel(e.xy));
+                var size = new OpenLayers.Size(21,25);
+                var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+                var icon = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png', size, offset);
+                markers.addMarker(endMarker);
+                console.log(startMarker.lonlat.transform(map.getProjectionObject(), proj));
+                console.log(endMarker.lonlat.transform(map.getProjectionObject(), proj));
+            } else {
+                startMarker.erase();
+                endMarker.erase();
+                startMarker = new OpenLayers.Marker(map.getLonLatFromPixel(e.xy));
+                var size = new OpenLayers.Size(21,25);
+                var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+                var icon = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png', size, offset);
+                markers.addMarker(startMarker,icon);
+            }
+            clicked = !clicked;
+        }
+
+    });
+
+    var click = new OpenLayers.Control.Click();
+    map.addControl(click);
+    click.activate();
 
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(function(position) {
               map.setCenter(new OpenLayers.LonLat(position.coords.longitude, position.coords.latitude).transform(proj, map.getProjectionObject()));
         });
     }
-
-
 }, false);
+
